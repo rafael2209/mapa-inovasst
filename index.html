@@ -251,9 +251,110 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 /* Mobile overlay */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
 
+/* ══ KIT CTA — SIDEBAR ══ */
+.sidebar-kit{
+  margin:16px 12px 0;
+  background:linear-gradient(135deg,rgba(200,146,42,.18),rgba(200,146,42,.08));
+  border:1px solid rgba(200,146,42,.3);
+  border-radius:12px;padding:16px 14px;
+}
+.sk-label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(200,146,42,.8);margin-bottom:8px}
+.sk-title{font-size:13px;font-weight:700;color:#fff;line-height:1.35;margin-bottom:6px}
+.sk-desc{font-size:11px;color:rgba(255,255,255,.45);line-height:1.5;margin-bottom:12px}
+.sk-btn{
+  display:block;width:100%;text-align:center;
+  background:var(--gold);color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;
+  padding:9px 12px;border-radius:8px;
+  text-decoration:none;letter-spacing:.02em;
+  transition:.2s;border:none;cursor:pointer;
+}
+.sk-btn:hover{background:#b07820;transform:translateY(-1px)}
+
+/* ══ KIT CTA — IN-CONTENT BLOCK ══ */
+.kit-block{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
+  border-radius:16px;padding:28px 28px 24px;
+  border:1px solid rgba(200,146,42,.25);
+  margin-top:6px;
+}
+.kb-eyebrow{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.kb-title{font-family:'DM Serif Display',serif;font-size:20px;color:#fff;line-height:1.3;margin-bottom:8px}
+.kb-desc{font-size:13px;color:rgba(255,255,255,.6);line-height:1.65;margin-bottom:18px}
+.kb-items{display:flex;flex-direction:column;gap:7px;margin-bottom:20px}
+.kb-item{display:flex;gap:8px;align-items:flex-start}
+.kb-ico{color:var(--teal2);font-size:13px;flex-shrink:0;margin-top:2px}
+.kb-txt{font-size:12.5px;color:rgba(255,255,255,.7);line-height:1.45}
+.kb-txt strong{color:#fff;font-weight:600}
+.kb-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.kb-btn-main{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--gold);color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+  padding:12px 22px;border-radius:10px;
+  text-decoration:none;letter-spacing:.02em;
+  transition:.2s;
+}
+.kb-btn-main:hover{background:#b07820;transform:translateY(-1px);box-shadow:0 4px 16px rgba(200,146,42,.4)}
+.kb-note{font-size:11px;color:rgba(255,255,255,.35);line-height:1.5}
+
+/* ══ FLOATING CTA ══ */
+.float-cta{
+  position:fixed;bottom:24px;right:24px;z-index:150;
+  display:flex;flex-direction:column;align-items:flex-end;gap:8px;
+}
+.float-label{
+  background:var(--navy);color:rgba(255,255,255,.7);
+  font-size:11px;padding:4px 10px;border-radius:8px;
+  border:1px solid rgba(255,255,255,.1);
+  pointer-events:none;
+  animation:pulse-label 3s ease-in-out infinite;
+}
+@keyframes pulse-label{0%,100%{opacity:.6}50%{opacity:1}}
+.float-btn{
+  display:flex;align-items:center;gap:8px;
+  background:var(--gold);color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+  padding:12px 18px;border-radius:12px;
+  text-decoration:none;letter-spacing:.02em;
+  box-shadow:0 4px 20px rgba(200,146,42,.45);
+  transition:.2s;
+}
+.float-btn:hover{background:#b07820;transform:translateY(-2px);box-shadow:0 6px 24px rgba(200,146,42,.55)}
+.float-btn .fb-icon{font-size:16px}
+
+/* ══ HEADER CTA ══ */
+.top-cta{
+  display:flex;align-items:center;gap:8px;
+  background:var(--gold);color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;
+  padding:7px 14px;border-radius:8px;
+  text-decoration:none;letter-spacing:.02em;
+  transition:.2s;flex-shrink:0;
+}
+.top-cta:hover{background:#b07820}
+
+/* ══ MTE REFS ══ */
+.mte-refs-list{display:flex;flex-direction:column;gap:8px}
+.mte-ref-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:var(--card);border:1px solid var(--line);border-radius:10px;text-decoration:none;color:inherit;transition:.18s}
+.mte-ref-item:hover{border-color:var(--teal);background:rgba(74,184,168,.06);transform:translateX(3px)}
+.mte-ref-left{display:flex;align-items:flex-start;gap:12px}
+.mte-ref-badge{flex-shrink:0;background:var(--navy);color:var(--teal);font-size:10px;font-weight:700;letter-spacing:.06em;padding:4px 8px;border-radius:6px;white-space:nowrap;margin-top:1px}
+.mte-ref-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.mte-ref-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.mte-ref-arrow{color:var(--teal);font-size:18px;flex-shrink:0}
+.mte-ref-note{margin-top:12px;padding:10px 14px;background:rgba(74,184,168,.08);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;font-size:12px;color:var(--muted);line-height:1.6}
+.mte-ref-note strong{color:var(--text)}
+
 /* Footer */
 .footer{margin-left:var(--sidebar);background:var(--navy);color:rgba(255,255,255,.45);text-align:center;padding:20px 32px;font-size:12px;line-height:1.7}
 .footer strong{color:rgba(255,255,255,.75)}
+
+@media(max-width:768px){
+  .float-cta{bottom:16px;right:16px}
+  .float-label{display:none}
+  .top-cta span.cta-label{display:none}
+}
 
 /* ══ RESPONSIVE ══ */
 @media(max-width:768px){
@@ -285,10 +386,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   </a>
   <div class="top-right">
     <div class="top-badge">Guia de Implementação</div>
+    <a class="top-cta" href="https://go.hotmart.com/Y105378603X" target="_blank" rel="noopener">
+      🛒 <span class="cta-label">Adquirir Kit Completo</span>
+    </a>
     <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </div>
+</div>
+
+<!-- ══ FLOATING CTA ══ -->
+<div class="float-cta">
+  <div class="float-label">O guia mostra o caminho. O Kit entrega as ferramentas.</div>
+  <a class="float-btn" href="https://go.hotmart.com/Y105378603X" target="_blank" rel="noopener">
+    <span class="fb-icon">📦</span> Kit InovaSST Completo
+  </a>
 </div>
 
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
@@ -303,6 +415,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div class="progress-label">Progresso</div>
       <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
       <div class="progress-txt" id="prog-txt">0 de 16 etapas</div>
+    </div>
+    <div class="sidebar-kit">
+      <div class="sk-label">Kit Completo</div>
+      <div class="sk-title">Documentos prontos para executar</div>
+      <div class="sk-desc">Questionário, calculadora, AEP editável, atas, portaria, slides e mais — tudo que o guia menciona.</div>
+      <a class="sk-btn" href="https://go.hotmart.com/Y105378603X" target="_blank" rel="noopener">Adquirir Kit InovaSST →</a>
     </div>
   </nav>
 
@@ -323,6 +441,101 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
    DATA — Fases e Etapas
 ══════════════════════════════════════════════════════════ */
 const DATA = [
+  {
+    id:0, color:'#c8922a', label:'Kit', name:'Kit InovaSST Completo',
+    timing:'Acesso imediato após a compra',
+    desc:'Tudo que este guia descreve — documentos, calculadora, questionário e treinamentos — prontos, editáveis e em conformidade com a NR-01 e as orientações do MTE.',
+    tags:['📦 Acesso imediato','✏️ 100% editável','✅ NR-01 + MTE','🔒 Conformidade auditável'],
+    steps:[
+      {
+        id:'0.1', name:'Por que adquirir o Kit?', icon:'🎯', iconBg:'#f5e6c8', timing:'Vantagens do método',
+        sections:[
+          {label:'O guia mostra o caminho. O Kit entrega as ferramentas.', type:'text', content:`Você acaba de navegar pelo processo completo — 5 fases, 16 etapas, 10 evidências. Agora imagine ter cada um desses documentos pronto, editável e estruturado para você apenas inserir os dados da sua empresa e assinar.<br><br>É exatamente isso que o Kit InovaSST entrega.`},
+          {label:'Por que o Kit é diferente do que existe no mercado', type:'reasons', items:[
+            {ico:'📊', title:'Calculadora automática de nível de risco', text:'Score COPSOQ + Indicadores da organização + Medidas de controle existentes — as três fontes que o MTE orienta. O nível de risco para o PGR é gerado automaticamente, sem cálculo manual.'},
+            {ico:'⚖️', title:'Atende integralmente à NR-01 e às orientações do MTE', text:'Instrumento validado (COPSOQ II-BR), inventário com 8 campos obrigatórios, metodologia rastreável com SEV × PROB. Não é só uma pesquisa — é um processo auditável.'},
+            {ico:'✏️', title:'Todos os documentos são editáveis', text:'Você personaliza com os dados da sua empresa e aplica. Não são templates genéricos — são documentos estruturados com a lógica do método já incorporada.'},
+            {ico:'🎓', title:'Treinamentos segmentados por público', text:'Slides editáveis com linguagem e conteúdo específicos para lideranças, membros da comissão (CAFRP) e colaboradores. A maioria do mercado entrega um treinamento único para todos.'},
+            {ico:'📅', title:'Cronograma automático do processo', text:'As 16 etapas organizadas com prazos e sequência — do dia 1 até a integração ao PGR. Nenhuma etapa perdida, nenhuma evidência faltando.'},
+            {ico:'🛡️', title:'Criado por quem aplicou na prática', text:'O método foi desenvolvido e aplicado antes de ser disponibilizado. Quando o MTE publicou seu treinamento com a mesma lógica de triangulação de dados, o método já estava em uso.'},
+          ]},
+        ]
+      },
+      {
+        id:'0.2', name:'O que está incluído', icon:'📦', iconBg:'#f5e6c8', timing:'Conteúdo completo do kit',
+        sections:[
+          {label:'Governança e documentação da comissão', type:'checklist', items:[
+            {text:'<strong>Portaria de Designação</strong> — editável, pronta para assinar'},
+            {text:'<strong>Ata da 1ª Reunião</strong> — com pauta estruturada e campos para assinatura'},
+            {text:'<strong>Cronograma automático</strong> — 16 etapas com prazos e responsáveis'},
+          ]},
+          {label:'Sensibilização e coleta', type:'checklist', items:[
+            {text:'<strong>Comunicado formal</strong> — editável para todos os canais'},
+            {text:'<strong>FAQ de anonimato</strong> — responde as 5 principais dúvidas dos colaboradores'},
+            {text:'<strong>Questionário COPSOQ II-BR</strong> — 39 questões, PDF imprimível e Google Forms configurado'},
+          ]},
+          {label:'Análise e cálculo automático', type:'checklist', items:[
+            {text:'<strong>Calculadora COPSOQ InovaSST v5</strong> — scores por dimensão e setor, matriz SEV×PROB, Dashboard, Indicadores de RH, Matriz de Risco e Inventário'},
+            {text:'<strong>Nível de risco para o PGR</strong> calculado automaticamente com as três fontes (Score + Indicadores + Medidas de controle)'},
+          ]},
+          {label:'Treinamentos — 3 públicos', type:'checklist', items:[
+            {text:'<strong>Slides para lideranças</strong> — como apoiar sem pressionar, o que acontece com os resultados'},
+            {text:'<strong>Slides para a comissão (CAFRP)</strong> — metodologia, papéis e cronograma'},
+            {text:'<strong>Slides para colaboradores</strong> — instrumento, escala, anonimato e como responder'},
+          ]},
+          {label:'AEP e encerramento', type:'checklist', items:[
+            {text:'<strong>AEP editável</strong> — com os 8 campos obrigatórios NR-01, inventário de perigos psicossociais por setor e plano de ação com medida, responsável e prazo'},
+            {text:'<strong>Relatório de devolutiva</strong> — modelo para apresentar os resultados aos colaboradores'},
+            {text:'<strong>Modelo de integração ao PGR</strong> — com o nível de risco SEV×PROB pronto para transferir'},
+          ]},
+          {label:'Adquirir agora', type:'kit-cta', trigger:'final'}
+        ]
+      },
+      {
+        id:'0.3', name:'Conformidade garantida', icon:'✅', iconBg:'#f5e6c8', timing:'Base normativa e técnica',
+        sections:[
+          {label:'Alinhamento normativo', type:'reasons', items:[
+            {ico:'📋', title:'NR-01 / Portaria MTE nº 1.419/2024', text:'Instrumento validado, inventário com 8 campos obrigatórios, metodologia rastreável, plano de ação documentado — todos os requisitos do §1.5.4.3 atendidos.'},
+            {ico:'🏛️', title:'Orientações do MTE / ENIT / SIT', text:'A triangulação de dados (Score + Indicadores + Medidas de controle) é exatamente a abordagem que a Inspeção do Trabalho orienta para que a avaliação não se baseie apenas na percepção individual.'},
+            {ico:'🔬', title:'COPSOQ II-BR — Gonçalves et al., 2021', text:'Instrumento validado cientificamente para o contexto brasileiro. Publicado na Revista de Saúde Pública (USP), com licença Creative Commons BY-NC.'},
+            {ico:'🔒', title:'LGPD — Lei 13.709/2018', text:'Anonimato garantido: nenhuma resposta individual é identificada. Os dados são sempre analisados por setor ou grupo operacional, respeitando a privacidade de cada respondente.'},
+          ]},
+          {
+            label:'Fontes oficiais do MTE — acesse e confira',
+            type:'mte-refs',
+            note:'<strong>Nota importante:</strong> o Método InovaSST foi desenvolvido e aplicado antes da publicação desses materiais oficiais. Quando o MTE/SIT publicou seus treinamentos com a mesma lógica de triangulação de dados — score + indicadores objetivos + medidas de controle — o método já estava em uso. Não seguimos o MTE. O MTE confirmou o que já fazíamos.',
+            items:[
+              {
+                badge:'SIT · MTE · EAD Oficial',
+                url:'https://ead.sit.trabalho.gov.br/',
+                title:'Plataforma EAD SIT — Secretaria de Inspeção do Trabalho',
+                desc:'Plataforma oficial de capacitação da Secretaria de Inspeção do Trabalho do MTE. Disponibiliza cursos gratuitos sobre NR-01, GRO e riscos psicossociais — produzidos pelos próprios auditores fiscais do trabalho responsáveis pela fiscalização das empresas.',
+              },
+              {
+                badge:'MTE · ENIT · 2025',
+                url:'https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2025/abril/semana-capacitasit-fatores-de-risco-psicossociais-no-ambiente-de-trabalho',
+                title:'Semana CapacitaSIT — Fatores de Risco Psicossociais no Trabalho',
+                desc:'Treinamento oficial do MTE/CANPAT transmitido pelo canal ENIT no YouTube. Apresenta a visão da Inspeção do Trabalho para avaliação dos FRPRT — incluindo indicadores objetivos além do questionário e o modelo do iceberg de riscos.',
+              },
+              {
+                badge:'SIT · CANPAT · 2024',
+                url:'https://www.youtube.com/watch?v=Z9Al3KoES-k',
+                title:'CANPAT 2024 — Alterações da NR-01 e Riscos Psicossociais (YouTube)',
+                desc:'Vídeo oficial da Secretaria de Inspeção do Trabalho. Inclui o modelo do iceberg com indicadores de alerta (absenteísmo, rotatividade, agravos à saúde, conflitos, reclamações e denúncias) — os mesmos que compõem a triangulação do Método InovaSST.',
+              },
+              {
+                badge:'MTE · Gov.br · Texto oficial',
+                url:'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1',
+                title:'NR-01 — Texto da norma, Manual GRO e Guia FRPRT (2025)',
+                desc:'Página oficial com o texto atualizado pela Portaria MTE nº 1.419/2024, o Manual de Interpretação do capítulo 1.5 (GRO/Psicossociais) e o Guia de Informações sobre Fatores de Risco Psicossociais publicado em 2025.',
+              },
+            ]
+          },
+          {label:'Adquirir o Kit InovaSST', type:'kit-cta', trigger:'final'}
+        ]
+      },
+    ]
+  },
   {
     id:1, color:'#0f2744', label:'Fase 1', name:'Constituição da Comissão',
     timing:'D+1 a D+2 — 2 dias úteis',
@@ -500,7 +713,8 @@ const DATA = [
             {label:'📊 Planilha de participação', type:'navy'},
             {label:'📋 Registro de prorrogação', type:'navy'},
             {label:'💾 Export XLSX das respostas', type:'navy'},
-          ]}
+          ]},
+          {label:'kit', type:'kit-cta', trigger:'coleta'}
         ]
       },
     ]
@@ -620,7 +834,8 @@ const DATA = [
             {label:'🗂️ PGR atualizado', type:'teal'},
             {label:'📁 Dossiê de evidências', type:'teal'},
           ]},
-          {label:'Ciclo concluído', type:'completion'}
+          {label:'Ciclo concluído', type:'completion'},
+          {label:'kit', type:'kit-cta', trigger:'final'}
         ]
       },
     ]
@@ -692,7 +907,7 @@ function renderContent(){
   <div class="phase-hero" style="border-top:4px solid ${phase.color}">
     <div class="phase-hero-inner">
       <div class="phase-eyebrow">
-        <div class="phase-num-big" style="background:${phase.color}">${phase.id}</div>
+        <div class="phase-num-big" style="background:${phase.color}">${phase.id===0?'📦':phase.id}</div>
         <div class="phase-meta">
           <div class="phase-meta-label">${phase.label}</div>
           <div class="phase-meta-timing">⏱ ${phase.timing}</div>
@@ -709,7 +924,7 @@ function renderContent(){
     <div class="step-tabs">
       ${phase.steps.map((st,si)=>`
         <button class="step-tab ${si===currentStep?'active':''}" onclick="gotoStep(${currentPhase},${si})">
-          <span class="tab-num">${phase.id}.${si+1}</span>${st.name}
+          <span class="tab-num">${phase.id===0?'Kit':phase.id}.${si+1}</span>${st.name}
         </button>
       `).join('')}
     </div>
@@ -746,7 +961,7 @@ function renderContent(){
         <div class="phase-switcher" style="margin-top:8px">
           ${DATA.map((p,pi)=>`
             <button class="ph-switch ${pi===currentPhase?'active':''}" onclick="gotoPhase(${pi})">
-              <div class="ph-sw-num" style="${pi===currentPhase?'background:rgba(255,255,255,.2)':''}">${p.id}</div>
+              <div class="ph-sw-num" style="${pi===currentPhase?'background:rgba(255,255,255,.2)':''}">${p.id===0?'📦':p.id}</div>
               ${p.name}
             </button>
           `).join('')}
@@ -842,6 +1057,56 @@ function renderSection(s){
       <h3>🎉 Ciclo de Avaliação Concluído</h3>
       <p>Processo completo: inventário de riscos psicossociais integrado ao PGR, Plano de Ação documentado e todas as 10 evidências do ciclo prontas para auditoria. Próximo ciclo recomendado: 12 meses.</p>
     </div>`;
+
+  if(s.type==='mte-refs') return `
+    <div class="content-block">
+      <div class="block-label">${s.label}</div>
+      <div class="mte-refs-list">
+        ${s.items.map(it=>`
+          <a class="mte-ref-item" href="${it.url}" target="_blank" rel="noopener">
+            <div class="mte-ref-left">
+              <div class="mte-ref-badge">${it.badge}</div>
+              <div class="mte-ref-body">
+                <div class="mte-ref-title">${it.title}</div>
+                <div class="mte-ref-desc">${it.desc}</div>
+              </div>
+            </div>
+            <div class="mte-ref-arrow">↗</div>
+          </a>`).join('')}
+      </div>
+      <div class="mte-ref-note">${s.note||''}</div>
+    </div>`;
+
+  if(s.type==='kit-cta'){
+    const isColeta = s.trigger==='coleta';
+    const title = isColeta
+      ? 'A calculadora, o questionário e os documentos que esta etapa exige estão no Kit InovaSST'
+      : 'Tudo que este guia descreve está pronto e editável no Kit InovaSST';
+    const desc = isColeta
+      ? 'O guia orienta o processo. Para executar você precisará: <strong>Questionário impresso (39 questões)</strong>, <strong>Calculadora COPSOQ v4 (xlsx)</strong>, <strong>AEP editável</strong>, atas, portaria, FAQ, slides de treinamento e relatório de devolutiva — todos já formatados e prontos para personalizar.'
+      : 'Todos os 10+ documentos do ciclo de conformidade, prontos para personalizar e aplicar. Você conduz, você assina — com a segurança de ter cada peça do processo já estruturada.';
+    return `
+    <div class="content-block">
+      <div class="kit-block">
+        <div class="kb-eyebrow">📦 Kit InovaSST · Método Completo</div>
+        <div class="kb-title">${title}</div>
+        <div class="kb-desc">${desc}</div>
+        <div class="kb-items">
+          <div class="kb-item"><div class="kb-ico">✓</div><div class="kb-txt"><strong>Questionário COPSOQ II-BR</strong> — 39 questões, PDF imprimível e Google Forms configurado</div></div>
+          <div class="kb-item"><div class="kb-ico">✓</div><div class="kb-txt"><strong>Calculadora automática (xlsx)</strong> — scores por setor e dimensão, matriz de risco, dashboard</div></div>
+          <div class="kb-item"><div class="kb-ico">✓</div><div class="kb-txt"><strong>AEP editável + inventário</strong> — com os 8 campos obrigatórios NR-01 já estruturados</div></div>
+          <div class="kb-item"><div class="kb-ico">✓</div><div class="kb-txt"><strong>Todos os documentos de governança</strong> — portaria, ata, cronograma, comunicado, FAQ</div></div>
+          <div class="kb-item"><div class="kb-ico">✓</div><div class="kb-txt"><strong>Slides de treinamento</strong> — para lideranças, colaboradores e CAFRP</div></div>
+        </div>
+        <div class="kb-actions">
+          <a class="kb-btn-main" href="https://go.hotmart.com/Y105378603X" target="_blank" rel="noopener">
+            Adquirir Kit InovaSST →
+          </a>
+          <div class="kb-note">Acesso imediato após a compra<br>Todos os arquivos editáveis</div>
+        </div>
+      </div>
+    </div>`;
+  }
 
   return '';
 }
