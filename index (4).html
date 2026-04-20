@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia de Implementação · Método InovaSST</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&display=swap');
+
+:root{
+  --navy:#0f2744; --navy2:#1a3a62; --navy3:#0a1e38;
+  --teal:#0d7c72; --teal2:#12a094; --teal-pale:#e8f5f4;
+  --gold:#c8922a; --gold-pale:#f5e6c8;
+  --slate:#3d5068; --muted:#5c7089; --line:#d4dde8;
+  --bg:#f4f7fa; --white:#ffffff; --text:#1c2b3a;
+  --red:#c0392b; --red-pale:#fdecea;
+  --green:#1a7a4a; --green-pale:#e8f5ee;
+  --p1:#0f2744; --p2:#0d7c72; --p3:#3d5068;
+  --p4:#c8922a; --p5:#1a7a4a;
+  --sidebar:260px;
+  --header:56px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.65;overflow-x:hidden}
+
+/* ══ HEADER ══ */
+.top-bar{
+  position:fixed;top:0;left:0;right:0;height:var(--header);
+  background:var(--navy);z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  box-shadow:0 2px 12px rgba(0,0,0,.3);
+}
+.top-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.top-mark{width:32px;height:32px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:16px;color:#fff;flex-shrink:0}
+.top-label{color:#fff;font-size:13px;font-weight:600;letter-spacing:.03em}
+.top-sub{color:rgba(255,255,255,.45);font-size:10px}
+.top-right{display:flex;align-items:center;gap:12px}
+.top-badge{background:rgba(13,124,114,.35);border:1px solid rgba(18,160,148,.4);color:#7ed6cf;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:20px}
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:6px;background:none;border:none}
+.hamburger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;transition:.3s}
+
+/* ══ LAYOUT ══ */
+.layout{display:flex;padding-top:var(--header);min-height:100vh}
+
+/* ══ SIDEBAR ══ */
+.sidebar{
+  width:var(--sidebar);flex-shrink:0;
+  background:var(--navy3);
+  position:fixed;left:0;top:var(--header);bottom:0;
+  overflow-y:auto;
+  padding:20px 0 40px;
+  transition:transform .3s ease;
+  z-index:100;
+}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+.sidebar-section{margin-bottom:6px}
+.sidebar-phase-btn{
+  width:100%;display:flex;align-items:center;gap:10px;
+  padding:10px 20px;
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,.65);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
+  text-align:left;transition:.2s;
+  border-left:3px solid transparent;
+}
+.sidebar-phase-btn:hover{background:rgba(255,255,255,.05);color:#fff}
+.sidebar-phase-btn.active{background:rgba(255,255,255,.08);color:#fff;border-left-color:var(--teal2)}
+.sidebar-phase-btn .ph-num{
+  width:26px;height:26px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;flex-shrink:0;
+  background:rgba(255,255,255,.1);color:#fff;
+}
+.sidebar-phase-btn.active .ph-num{background:var(--teal)}
+.sidebar-phase-btn .ph-text{flex:1;min-width:0}
+.sidebar-phase-btn .ph-name{display:block;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-phase-btn .ph-timing{display:block;font-size:10px;color:rgba(255,255,255,.35);margin-top:1px}
+.sidebar-phase-btn .chevron{font-size:10px;transition:.3s}
+.sidebar-phase-btn.open .chevron{transform:rotate(90deg)}
+
+.sidebar-steps{overflow:hidden;max-height:0;transition:max-height .35s ease}
+.sidebar-steps.open{max-height:400px}
+.sidebar-step-btn{
+  width:100%;display:flex;align-items:center;gap:8px;
+  padding:7px 20px 7px 38px;
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,.45);font-family:'DM Sans',sans-serif;font-size:12px;
+  text-align:left;transition:.15s;
+  border-left:3px solid transparent;
+}
+.sidebar-step-btn:hover{color:rgba(255,255,255,.75);background:rgba(255,255,255,.04)}
+.sidebar-step-btn.active{color:#fff;background:rgba(255,255,255,.07);border-left-color:var(--gold)}
+.sidebar-step-btn .step-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);flex-shrink:0;transition:.2s}
+.sidebar-step-btn.active .step-dot,.sidebar-step-btn.done .step-dot{background:var(--teal2)}
+.sidebar-step-btn.done{color:rgba(255,255,255,.35)}
+
+.sidebar-progress{padding:16px 20px;margin-top:4px;border-top:1px solid rgba(255,255,255,.06)}
+.progress-label{color:rgba(255,255,255,.4);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.progress-bar{height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--teal2);border-radius:2px;transition:width .4s ease}
+.progress-txt{color:rgba(255,255,255,.35);font-size:10px;margin-top:6px}
+
+/* ══ CONTENT AREA ══ */
+.content{margin-left:var(--sidebar);flex:1;min-width:0}
+
+/* ══ PHASE HERO ══ */
+.phase-hero{
+  padding:40px 48px 36px;
+  border-bottom:1px solid var(--line);
+  background:var(--white);
+  position:sticky;top:var(--header);z-index:50;
+}
+.phase-hero-inner{max-width:820px}
+.phase-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.phase-num-big{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Serif Display',serif;font-size:20px;font-weight:700;color:#fff;
+  flex-shrink:0;
+}
+.phase-meta{}
+.phase-meta-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.phase-meta-timing{font-size:12px;font-weight:600;color:var(--teal);margin-top:2px}
+.phase-title{font-family:'DM Serif Display',serif;font-size:clamp(22px,3vw,30px);color:var(--navy);line-height:1.2;margin-bottom:8px}
+.phase-desc{font-size:14px;color:var(--slate);max-width:640px;line-height:1.65}
+.phase-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.phase-tag{display:flex;align-items:center;gap:5px;background:var(--teal-pale);color:var(--teal);font-size:11px;font-weight:600;padding:4px 10px;border-radius:16px}
+
+/* ══ STEP VIEWER ══ */
+.step-viewer{padding:40px 48px;max-width:820px}
+
+.step-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:28px}
+.step-tab{
+  padding:7px 14px;border-radius:20px;border:1px solid var(--line);
+  background:var(--white);color:var(--muted);font-size:12px;font-weight:600;
+  cursor:pointer;transition:.2s;font-family:'DM Sans',sans-serif;
+}
+.step-tab:hover{border-color:var(--teal);color:var(--teal)}
+.step-tab.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.step-tab .tab-num{opacity:.6;margin-right:4px}
+
+/* Step content panel */
+.step-panel{display:none;animation:fadeIn .25s ease}
+.step-panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.step-card{background:var(--white);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.step-card-head{
+  padding:22px 26px;
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:flex-start;gap:16px;
+}
+.step-icon-wrap{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.step-card-title{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:3px}
+.step-card-timing{font-size:11px;color:var(--muted);font-weight:500}
+.step-card-body{padding:24px 26px}
+
+/* Content blocks */
+.content-block{margin-bottom:22px}
+.content-block:last-child{margin-bottom:0}
+.block-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.block-text{font-size:14px;color:var(--slate);line-height:1.7}
+.block-text p{margin-bottom:8px}
+.block-text p:last-child{margin-bottom:0}
+.block-text strong{color:var(--navy);font-weight:600}
+
+/* Why box */
+.why-box{background:#f0f4fa;border-left:3px solid var(--navy);border-radius:0 10px 10px 0;padding:16px 18px;margin:14px 0}
+.why-box.teal{background:var(--teal-pale);border-left-color:var(--teal)}
+.why-box.gold{background:var(--gold-pale);border-left-color:var(--gold)}
+.why-box.red{background:var(--red-pale);border-left-color:var(--red)}
+.why-box.green{background:var(--green-pale);border-left-color:var(--green)}
+.why-head-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.why-head-icon{font-size:16px}
+.why-head-text{font-size:13px;font-weight:700;color:var(--navy)}
+.why-body-text{font-size:13px;color:var(--slate);line-height:1.65}
+
+/* Reason list */
+.reason-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+.reason-item{display:flex;gap:12px;background:rgba(255,255,255,.7);border-radius:10px;padding:12px 14px;border:1px solid rgba(0,0,0,.05)}
+.reason-ico{font-size:16px;flex-shrink:0;margin-top:1px}
+.reason-txt{font-size:13px;color:var(--text);line-height:1.55}
+.reason-txt strong{color:var(--navy);font-weight:600}
+
+/* Checklist */
+.checklist{display:flex;flex-direction:column;gap:8px}
+.check-item{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,.7);border:1px solid var(--line)}
+.check-ico{color:var(--teal);font-size:15px;flex-shrink:0;margin-top:1px;font-weight:700}
+.check-text{font-size:13px;color:var(--slate);line-height:1.5}
+.check-text strong{color:var(--navy);font-weight:600}
+
+/* Flow horizontal */
+.h-flow{display:flex;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:14px 0}
+.h-flow-step{flex:1;padding:14px 12px;text-align:center;background:var(--white);position:relative;cursor:default}
+.h-flow-step:not(:last-child)::after{content:'→';position:absolute;right:-8px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);z-index:1}
+.h-flow-step:not(:first-child){border-left:1px solid var(--line)}
+.hf-icon{font-size:20px;margin-bottom:5px}
+.hf-title{font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.hf-desc{font-size:11px;color:var(--muted);line-height:1.4}
+
+/* Coleta cards */
+.coleta-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.coleta-card{border-radius:12px;border:2px solid var(--teal);padding:20px;text-align:center;background:var(--white)}
+.coleta-card.ext{border-color:var(--gold)}
+.coleta-num{font-family:'DM Serif Display',serif;font-size:44px;line-height:1;color:var(--teal);margin-bottom:4px}
+.coleta-card.ext .coleta-num{color:var(--gold)}
+.coleta-unit{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.coleta-desc{font-size:12.5px;color:var(--slate);line-height:1.5}
+
+/* Deliverables */
+.deliverables{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.del{display:flex;align-items:center;gap:5px;background:var(--teal-pale);color:var(--teal);font-size:11px;font-weight:600;padding:5px 12px;border-radius:16px;border:1px solid rgba(13,124,114,.2)}
+.del.gold{background:var(--gold-pale);color:var(--gold);border-color:rgba(200,146,42,.2)}
+.del.navy{background:#e8eef5;color:var(--navy);border-color:rgba(15,39,68,.15)}
+
+/* Nav buttons */
+.step-nav{display:flex;justify-content:space-between;margin-top:28px;gap:12px}
+.nav-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 20px;border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
+  cursor:pointer;transition:.2s;border:1px solid var(--line);background:var(--white);color:var(--navy);
+}
+.nav-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.nav-btn:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
+.nav-btn.primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+.nav-btn.primary:hover{background:var(--teal2);border-color:var(--teal2)}
+.nav-btn .arr{font-size:16px}
+
+/* Phase nav (between phases) */
+.phase-switcher{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.ph-switch{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 16px;border-radius:12px;border:1px solid var(--line);
+  background:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;
+  font-size:12px;font-weight:600;color:var(--slate);transition:.2s;
+}
+.ph-switch:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-pale)}
+.ph-switch.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ph-switch .ph-sw-num{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:rgba(0,0,0,.1);flex-shrink:0}
+
+/* Completion banner */
+.completion{background:linear-gradient(135deg,var(--green),#1a6a3a);border-radius:14px;padding:28px 30px;color:#fff;text-align:center;margin-top:28px}
+.completion h3{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:8px}
+.completion p{font-size:13px;opacity:.85;line-height:1.6;max-width:520px;margin:0 auto}
+
+/* Mobile overlay */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
+
+/* ══ KIT CTA — SIDEBAR ══ */
+.sidebar-kit{
+  margin:16px 12px 0;
+  background:linear-gradient(135deg,rgba(200,146,42,.18),rgba(200,146,42,.08));
+  border:1px solid rgba(200,146,42,.3);
+  border-radius:12px;padding:16px 14px;
+}
+.sk-label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(200,146,42,.8);margin-bottom:8px}
+.sk-title{font-size:13px;font-weight:700;color:#fff;line-height:1.35;margin-bottom:6px}
+.sk-desc{font-size:11px;color:rgba(255,255,255,.45);line-height:1.5;margin-bottom:12px}
+.sk-btn{
+  display:block;width:100%;text-align:center;
+  background:var(--gold);color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;
+  padding:9px 12px;border-radius:8px;
+  text-decoration:none;letter-spacing:.02em;
+  transition:.2s;border:none;cursor:pointer;
+}
+.sk-btn:hover{background:#b07820;transform:translateY(-1px)}
+
+/* ══ KIT CTA — IN-CONTENT BLOCK ══ */
+.kit-block{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
+  border-radius:16px;padding:28px 28px 24px;
+  border:1px solid rgba(200,146,42,.25);
+  margin-top:6px;
+}
+.kb-eyebrow{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.kb-title{font-family:'DM Serif Display',serif;font-size:20px;color:#fff;line-height:1.3;margin-bottom:8px}
+.kb-desc{font-size:13px;color:rgba(255,255,255,.6);line-height:1.65;margin-bottom:18px}
+.kb-items{display:flex;flex-direction:column;gap:7px;margin-bottom:20px}
+.kb-item{display:flex;gap:8px;align-items:flex-start}
+.kb-ico{color:var(--teal2);font-size:13px;flex-shrink:0;margin-top:2px}
+.kb-txt{font-size:12.5px;color:rgba(255,255,255,.7);line-height:1.45}
+.kb-txt strong{color:#fff;font-weight:600}
+.kb-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.kb-btn-main{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--gold);color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+  padding:12px 22px;border-radius:10px;
+  text-decoration:none;letter-spacing:.02em;
+  transition:.2s;
+}
+.kb-btn-main:hover{background:#b07820;transform:translateY(-1px);box-shadow:0 4px 16px rgba(200,146,42,.4)}
+.kb-note{font-size:11px;color:rgba(255,255,255,.35);line-height:1.5}
+
+/* ══ FLOATING CTA ══ */
+.float-cta{
+  position:fixed;bottom:24px;right:24px;z-index:150;
+  display:flex;flex-direction:column;align-items:flex-end;gap:8px;
+}
+.float-label{
+  background:var(--navy);color:rgba(255,255,255,.7);
+  font-size:11px;padding:4px 10px;border-radius:8px;
+  border:1px solid rgba(255,255,255,.1);
+  pointer-events:none;
+  animation:pulse-label 3s ease-in-out infinite;
+}
+@keyframes pulse-label{0%,100%{opacity:.6}50%{opacity:1}}
+.float-btn{
+  display:flex;align-items:center;gap:8px;
+  background:var(--gold);color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+  padding:12px 18px;border-radius:12px;
+  text-decoration:none;letter-spacing:.02em;
+  box-shadow:0 4px 20px rgba(200,146,42,.45);
+  transition:.2s;
+}
+.float-btn:hover{background:#b07820;transform:translateY(-2px);box-shadow:0 6px 24px rgba(200,146,42,.55)}
+.float-btn .fb-icon{font-size:16px}
+
+/* ══ HEADER CTA ══ */
+.top-cta{
+  display:flex;align-items:center;gap:8px;
+  background:var(--gold);color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;
+  padding:7px 14px;border-radius:8px;
+  text-decoration:none;letter-spacing:.02em;
+  transition:.2s;flex-shrink:0;
+}
+.top-cta:hover{background:#b07820}
+
+/* ══ MTE REFS ══ */
+.mte-refs-list{display:flex;flex-direction:column;gap:8px}
+.mte-ref-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:var(--card);border:1px solid var(--line);border-radius:10px;text-decoration:none;color:inherit;transition:.18s}
+.mte-ref-item:hover{border-color:var(--teal);background:rgba(74,184,168,.06);transform:translateX(3px)}
+.mte-ref-left{display:flex;align-items:flex-start;gap:12px}
+.mte-ref-badge{flex-shrink:0;background:var(--navy);color:var(--teal);font-size:10px;font-weight:700;letter-spacing:.06em;padding:4px 8px;border-radius:6px;white-space:nowrap;margin-top:1px}
+.mte-ref-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.mte-ref-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.mte-ref-arrow{color:var(--teal);font-size:18px;flex-shrink:0}
+.mte-ref-note{margin-top:12px;padding:10px 14px;background:rgba(74,184,168,.08);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;font-size:12px;color:var(--muted);line-height:1.6}
+.mte-ref-note strong{color:var(--text)}
+
+/* Footer */
+.footer{margin-left:var(--sidebar);background:var(--navy);color:rgba(255,255,255,.45);text-align:center;padding:20px 32px;font-size:12px;line-height:1.7}
+.footer strong{color:rgba(255,255,255,.75)}
+
+@media(max-width:768px){
+  .float-cta{bottom:16px;right:16px}
+  .float-label{display:none}
+  .top-cta span.cta-label{display:none}
+}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:768px){
+  :root{--sidebar:0px}
+  .sidebar{transform:translateX(-260px);width:260px}
+  .sidebar.open{transform:translateX(0)}
+  .content,.footer{margin-left:0}
+  .hamburger{display:flex}
+  .overlay.open{display:block}
+  .phase-hero{padding:24px 20px}
+  .step-viewer{padding:24px 20px}
+  .coleta-pair{grid-template-columns:1fr}
+  .h-flow{flex-direction:column}
+  .h-flow-step:not(:last-child)::after{content:'↓';right:auto;left:50%;top:auto;bottom:-10px;transform:translateX(-50%)}
+  .h-flow-step:not(:first-child){border-left:none;border-top:1px solid var(--line)}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TOP BAR ══ -->
+<div class="top-bar">
+  <a class="top-brand" href="#">
+    <div class="top-mark">N</div>
+    <div>
+      <div class="top-label">NewSST · Método InovaSST</div>
+      <div class="top-sub">NR-01 / Portaria MTE nº 1.419/2024</div>
+    </div>
+  </a>
+  <div class="top-right">
+    <div class="top-badge">Guia de Implementação</div>
+    <a class="top-cta" href="https://go.hotmart.com/Y105378603X" target="_blank" rel="noopener">
+      🛒 <span class="cta-label">Adquirir Kit Completo</span>
+    </a>
+    <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</div>
+
+<!-- ══ FLOATING CTA ══ -->
+<div class="float-cta">
+  <div class="float-label">O guia mostra o caminho. O Kit entrega as ferramentas.</div>
+  <a class="float-btn" href="https://go.hotmart.com/Y105378603X" target="_blank" rel="noopener">
+    <span class="fb-icon">📦</span> Kit InovaSST Completo
+  </a>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- ══ LAYOUT ══ -->
+<div class="layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <nav class="sidebar" id="sidebar">
+    <div id="sidebar-phases"></div>
+    <div class="sidebar-progress">
+      <div class="progress-label">Progresso</div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="progress-txt" id="prog-txt">0 de 16 etapas</div>
+    </div>
+    <div class="sidebar-kit">
+      <div class="sk-label">Kit Completo</div>
+      <div class="sk-title">Documentos prontos para executar</div>
+      <div class="sk-desc">Questionário, calculadora, AEP editável, atas, portaria, slides e mais — tudo que o guia menciona.</div>
+      <a class="sk-btn" href="https://go.hotmart.com/Y105378603X" target="_blank" rel="noopener">Adquirir Kit InovaSST →</a>
+    </div>
+  </nav>
+
+  <!-- ══ CONTENT ══ -->
+  <div class="content" id="content-area">
+    <!-- injected by JS -->
+  </div>
+</div>
+
+<footer class="footer">
+  <p><strong>Método InovaSST · NewSST</strong> · Conformidade que protege.</p>
+  <p>NR-01 / Portaria MTE nº 1.419/2024 · COPSOQ II-BR · Gonçalves et al., Rev. Saúde Pública, v.55, 2021</p>
+  <p>📧 rmattos22@gmail.com · 📱 WhatsApp 61 98469-4592</p>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   DATA — Fases e Etapas
+══════════════════════════════════════════════════════════ */
+const DATA = [
+  {
+    id:0, color:'#c8922a', label:'Kit', name:'Kit InovaSST Completo',
+    timing:'Acesso imediato após a compra',
+    desc:'Tudo que este guia descreve — documentos, calculadora, questionário e treinamentos — prontos, editáveis e em conformidade com a NR-01 e as orientações do MTE.',
+    tags:['📦 Acesso imediato','✏️ 100% editável','✅ NR-01 + MTE','🔒 Conformidade auditável'],
+    steps:[
+      {
+        id:'0.1', name:'Por que adquirir o Kit?', icon:'🎯', iconBg:'#f5e6c8', timing:'Vantagens do método',
+        sections:[
+          {label:'O guia mostra o caminho. O Kit entrega as ferramentas.', type:'text', content:`Você acaba de navegar pelo processo completo — 5 fases, 16 etapas, 10 evidências. Agora imagine ter cada um desses documentos pronto, editável e estruturado para você apenas inserir os dados da sua empresa e assinar.<br><br>É exatamente isso que o Kit InovaSST entrega.`},
+          {label:'Por que o Kit é diferente do que existe no mercado', type:'reasons', items:[
+            {ico:'📊', title:'Calculadora automática de nível de risco', text:'Score COPSOQ + Indicadores da organização + Medidas de controle existentes — as três fontes que o MTE orienta. O nível de risco para o PGR é gerado automaticamente, sem cálculo manual.'},
+            {ico:'⚖️', title:'Atende integralmente à NR-01 e às orientações do MTE', text:'Instrumento validado (COPSOQ II-BR), inventário com 8 campos obrigatórios, metodologia rastreável com SEV × PROB. Não é só uma pesquisa — é um processo auditável.'},
+            {ico:'✏️', title:'Todos os documentos são editáveis', text:'Você personaliza com os dados da sua empresa e aplica. Não são templates genéricos — são documentos estruturados com a lógica do método já incorporada.'},
+            {ico:'🎓', title:'Treinamentos segmentados por público', text:'Slides editáveis com linguagem e conteúdo específicos para lideranças, membros da comissão (CAFRP) e colaboradores. A maioria do mercado entrega um treinamento único para todos.'},
+            {ico:'📅', title:'Cronograma automático do processo', text:'As 16 etapas organizadas com prazos e sequência — do dia 1 até a integração ao PGR. Nenhuma etapa perdida, nenhuma evidência faltando.'},
+            {ico:'🛡️', title:'Criado por quem aplicou na prática', text:'O método foi desenvolvido e aplicado antes de ser disponibilizado. Quando o MTE publicou seu treinamento com a mesma lógica de triangulação de dados, o método já estava em uso.'},
+          ]},
+        ]
+      },
+      {
+        id:'0.2', name:'O que está incluído', icon:'📦', iconBg:'#f5e6c8', timing:'Conteúdo completo do kit',
+        sections:[
+          {label:'Governança e documentação da comissão', type:'checklist', items:[
+            {text:'<strong>Portaria de Designação</strong> — editável, pronta para assinar'},
+            {text:'<strong>Ata da 1ª Reunião</strong> — com pauta estruturada e campos para assinatura'},
+            {text:'<strong>Cronograma automático</strong> — 16 etapas com prazos e responsáveis'},
+          ]},
+          {label:'Sensibilização e coleta', type:'checklist', items:[
+            {text:'<strong>Comunicado formal</strong> — editável para todos os canais'},
+            {text:'<strong>FAQ de anonimato</strong> — responde as 5 principais dúvidas dos colaboradores'},
+            {text:'<strong>Questionário COPSOQ II-BR</strong> — 39 questões, PDF imprimível e Google Forms configurado'},
+          ]},
+          {label:'Análise e cálculo automático', type:'checklist', items:[
+            {text:'<strong>Calculadora COPSOQ InovaSST v5</strong> — scores por dimensão e setor, matriz SEV×PROB, Dashboard, Indicadores de RH, Matriz de Risco e Inventário'},
+            {text:'<strong>Nível de risco para o PGR</strong> calculado automaticamente com as três fontes (Score + Indicadores + Medidas de controle)'},
+          ]},
+          {label:'Treinamentos — 3 públicos', type:'checklist', items:[
+            {text:'<strong>Slides para lideranças</strong> — como apoiar sem pressionar, o que acontece com os resultados'},
+            {text:'<strong>Slides para a comissão (CAFRP)</strong> — metodologia, papéis e cronograma'},
+            {text:'<strong>Slides para colaboradores</strong> — instrumento, escala, anonimato e como responder'},
+          ]},
+          {label:'AEP e encerramento', type:'checklist', items:[
+            {text:'<strong>AEP editável</strong> — com os 8 campos obrigatórios NR-01, inventário de perigos psicossociais por setor e plano de ação com medida, responsável e prazo'},
+            {text:'<strong>Relatório de devolutiva</strong> — modelo para apresentar os resultados aos colaboradores'},
+            {text:'<strong>Modelo de integração ao PGR</strong> — com o nível de risco SEV×PROB pronto para transferir'},
+          ]},
+          {label:'Adquirir agora', type:'kit-cta', trigger:'final'}
+        ]
+      },
+      {
+        id:'0.3', name:'Conformidade garantida', icon:'✅', iconBg:'#f5e6c8', timing:'Base normativa e técnica',
+        sections:[
+          {label:'Alinhamento normativo', type:'reasons', items:[
+            {ico:'📋', title:'NR-01 / Portaria MTE nº 1.419/2024', text:'Instrumento validado, inventário com 8 campos obrigatórios, metodologia rastreável, plano de ação documentado — todos os requisitos do §1.5.4.3 atendidos.'},
+            {ico:'🏛️', title:'Orientações do MTE / ENIT / SIT', text:'A triangulação de dados (Score + Indicadores + Medidas de controle) é exatamente a abordagem que a Inspeção do Trabalho orienta para que a avaliação não se baseie apenas na percepção individual.'},
+            {ico:'🔬', title:'COPSOQ II-BR — Gonçalves et al., 2021', text:'Instrumento validado cientificamente para o contexto brasileiro. Publicado na Revista de Saúde Pública (USP), com licença Creative Commons BY-NC.'},
+            {ico:'🔒', title:'LGPD — Lei 13.709/2018', text:'Anonimato garantido: nenhuma resposta individual é identificada. Os dados são sempre analisados por setor ou grupo operacional, respeitando a privacidade de cada respondente.'},
+          ]},
+          {
+            label:'Fontes oficiais do MTE — acesse e confira',
+            type:'mte-refs',
+            note:'<strong>Nota importante:</strong> o Método InovaSST foi desenvolvido e aplicado antes da publicação desses materiais oficiais. Quando o MTE/SIT publicou seus treinamentos com a mesma lógica de triangulação de dados — score + indicadores objetivos + medidas de controle — o método já estava em uso. Não seguimos o MTE. O MTE confirmou o que já fazíamos.',
+            items:[
+              {
+                badge:'SIT · MTE · EAD Oficial',
+                url:'https://ead.sit.trabalho.gov.br/',
+                title:'Plataforma EAD SIT — Secretaria de Inspeção do Trabalho',
+                desc:'Plataforma oficial de capacitação da Secretaria de Inspeção do Trabalho do MTE. Disponibiliza cursos gratuitos sobre NR-01, GRO e riscos psicossociais — produzidos pelos próprios auditores fiscais do trabalho responsáveis pela fiscalização das empresas.',
+              },
+              {
+                badge:'MTE · ENIT · 2025',
+                url:'https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2025/abril/semana-capacitasit-fatores-de-risco-psicossociais-no-ambiente-de-trabalho',
+                title:'Semana CapacitaSIT — Fatores de Risco Psicossociais no Trabalho',
+                desc:'Treinamento oficial do MTE/CANPAT transmitido pelo canal ENIT no YouTube. Apresenta a visão da Inspeção do Trabalho para avaliação dos FRPRT — incluindo indicadores objetivos além do questionário e o modelo do iceberg de riscos.',
+              },
+              {
+                badge:'SIT · CANPAT · 2024',
+                url:'https://www.youtube.com/watch?v=Z9Al3KoES-k',
+                title:'CANPAT 2024 — Alterações da NR-01 e Riscos Psicossociais (YouTube)',
+                desc:'Vídeo oficial da Secretaria de Inspeção do Trabalho. Inclui o modelo do iceberg com indicadores de alerta (absenteísmo, rotatividade, agravos à saúde, conflitos, reclamações e denúncias) — os mesmos que compõem a triangulação do Método InovaSST.',
+              },
+              {
+                badge:'MTE · Gov.br · Texto oficial',
+                url:'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1',
+                title:'NR-01 — Texto da norma, Manual GRO e Guia FRPRT (2025)',
+                desc:'Página oficial com o texto atualizado pela Portaria MTE nº 1.419/2024, o Manual de Interpretação do capítulo 1.5 (GRO/Psicossociais) e o Guia de Informações sobre Fatores de Risco Psicossociais publicado em 2025.',
+              },
+            ]
+          },
+          {label:'Adquirir o Kit InovaSST', type:'kit-cta', trigger:'final'}
+        ]
+      },
+    ]
+  },
+  {
+    id:1, color:'#0f2744', label:'Fase 1', name:'Constituição da Comissão',
+    timing:'D+1 a D+2 — 2 dias úteis',
+    desc:'Formalizar a comissão multidisciplinar responsável por conduzir todo o processo de avaliação psicossocial.',
+    tags:['📋 Portaria de Designação','📝 Ata da 1ª Reunião','📅 Cronograma'],
+    steps:[
+      {
+        id:'1.1', name:'Por que a Comissão?', icon:'💡', iconBg:'#e8eef5', timing:'Fundamentação',
+        sections:[
+          {label:'Por que é necessária', type:'text', content:`A constituição de uma comissão multidisciplinar não é apenas uma formalidade — é o pilar que sustenta a credibilidade e efetividade de todo o processo de avaliação psicossocial.`},
+          {label:'Razões fundamentais', type:'reasons', items:[
+            {ico:'⚖️', title:'Multidisciplinariedade', text:'Atende ao critério orientado pelos manuais do MTE. A composição por diferentes áreas garante diferentes perspectivas sobre as condições de trabalho — algo que uma visão técnica isolada não alcança.'},
+            {ico:'🛡️', title:'Robustez em auditoria', text:'Uma avaliação conduzida por comissão formal tem respaldo institucional documentado, tornando o processo muito mais sólido frente a fiscalizações e questionamentos.'},
+            {ico:'🏛️', title:'Conhecimento interno insubstituível', text:'O formato reúne as pessoas-chave que entendem o processo por dentro. Assessoria externa resolveria a conformidade, mas não teria acesso às nuances e pontos críticos que só quem vive a organização conhece — e isso faz diferença direta na qualidade das medidas geradas.'}
+          ]},
+          {label:'Documentos desta etapa', type:'deliverables', items:[
+            {label:'📋 Portaria de Designação', type:'teal'},
+            {label:'📝 Ata 1ª Reunião', type:'teal'},
+            {label:'📅 Cronograma aprovado', type:'teal'},
+          ]}
+        ]
+      },
+      {
+        id:'1.2', name:'Portaria de Designação', icon:'📋', iconBg:'#e8eef5', timing:'D+1 — emissão formal',
+        sections:[
+          {label:'O que fazer', type:'checklist', items:[
+            {text:'Emitir portaria nomeando formalmente cada membro da CAFRP com nome completo, função e setor'},
+            {text:'Submeter para assinatura da direção — sem assinatura da liderança, a comissão não tem amparo formal'},
+            {text:'Arquivar o documento original como evidência — ele é o ponto de partida do dossiê de conformidade'},
+            {text:'Distribuir cópia a cada membro designado'},
+          ]},
+          {label:'Composição sugerida', type:'why', variant:'teal', icon:'👥', title:'Quem deve compor a CAFRP?', text:'<strong>RH</strong> — relação com trabalhadores e dados de turnover/absenteísmo<br><strong>Gerência Administrativa</strong> — poder de decisão e alocação de recursos<br><strong>CIPA</strong> — voz dos trabalhadores, eleita por eles<br><strong>SESMT / TST</strong> — condução técnica e assinatura dos documentos'},
+        ]
+      },
+      {
+        id:'1.3', name:'1ª Reunião da CAFRP', icon:'🤝', iconBg:'#e8eef5', timing:'D+2 — reunião inaugural',
+        sections:[
+          {label:'Pauta da reunião', type:'checklist', items:[
+            {text:'Apresentar o Método InovaSST e o instrumento COPSOQ II-BR (39 questões, 6 dimensões)'},
+            {text:'Distribuir e revisar o cronograma completo do processo (Fases 1 a 5)'},
+            {text:'Definir papéis: quem comunica, quem treina, quem monitora a coleta, quem assina'},
+            {text:'Validar o questionário e o canal de coleta (Google Forms)'},
+            {text:'Registrar em ata com assinatura de todos os presentes'},
+          ]},
+          {label:'Observação', type:'why', variant:'gold', icon:'⚠️', title:'Sem ata = sem evidência', text:'A ata da 1ª Reunião é uma das 10 evidências obrigatórias do ciclo de conformidade. Ela comprova que a comissão foi constituída, reuniu-se e deliberou antes do início da coleta.'},
+        ]
+      },
+    ]
+  },
+  {
+    id:2, color:'#0d7c72', label:'Fase 2', name:'Sensibilização e Treinamentos',
+    timing:'D+3 a D+5 — 3 dias úteis',
+    desc:'Preparar colaboradores e lideranças para a avaliação — a adesão e a qualidade dos dados dependem diretamente dessa fase.',
+    tags:['📢 Comunicado','❓ FAQ Anonimato','🎓 Treinamentos','📝 Registro de participação'],
+    steps:[
+      {
+        id:'2.1', name:'Por que Sensibilizar?', icon:'💡', iconBg:'#e8f5f4', timing:'Fundamentação',
+        sections:[
+          {label:'Fundamento', type:'why', variant:'teal', icon:'📊', title:'Adesão é condição para dados válidos', text:'Sem sensibilização prévia a adesão cai e os dados perdem validade estatística. Esta fase prepara psicologicamente os colaboradores, reduz resistência e garante que todos entendam o anonimato antes de responder.'},
+          {label:'Sobre a meta de participação', type:'reasons', items:[
+            {ico:'📊', title:'50% — referência técnica, não obrigação legal', text:'A taxa mínima de 50% não é uma exigência da NR-01 — foi incluída como referência para garantir dados mais robustos. Abaixo desse patamar, os scores tendem a ser pouco representativos e podem não refletir a realidade do setor.'},
+            {ico:'🔒', title:'Anonimato total é o argumento mais forte', text:'Comunicar com clareza que nenhuma resposta individual será identificada. Os resultados são sempre analisados por setor — nunca por pessoa. Esse esclarecimento reduz drasticamente a resistência e o medo de retaliação.'},
+          ]},
+        ]
+      },
+      {
+        id:'2.2', name:'Comunicado aos Colaboradores', icon:'📢', iconBg:'#e8f5f4', timing:'D+3 — distribuição',
+        sections:[
+          {label:'O que o comunicado deve conter', type:'checklist', items:[
+            {text:'<strong>Objetivo da pesquisa</strong> — melhoria das condições de trabalho, não avaliação individual'},
+            {text:'<strong>Período de coleta</strong> — datas de abertura e encerramento do formulário'},
+            {text:'<strong>Canal de resposta</strong> — link do Google Forms, QR Code ou formulário impresso'},
+            {text:'<strong>Garantia de anonimato</strong> — as respostas são agrupadas, ninguém é identificado'},
+            {text:'<strong>Tempo estimado</strong> — cerca de 10 minutos para responder'},
+          ]},
+          {label:'Canais de distribuição', type:'why', variant:'teal', icon:'📤', title:'Use múltiplos canais', text:'Mural físico + e-mail corporativo + grupos de WhatsApp do setor. Quanto mais pontos de contato, maior a visibilidade e a adesão.'},
+        ]
+      },
+      {
+        id:'2.3', name:'FAQ de Anonimato', icon:'❓', iconBg:'#e8f5f4', timing:'D+3 — distribuição',
+        sections:[
+          {label:'Perguntas frequentes a responder', type:'checklist', items:[
+            {text:'<strong>Quem vai ter acesso às respostas?</strong> Apenas os membros da CAFRP, com resultados sempre agrupados por setor'},
+            {text:'<strong>Como o anonimato é garantido?</strong> O formulário não coleta nome, matrícula ou qualquer dado identificador'},
+            {text:'<strong>O que acontece com os resultados?</strong> São usados para identificar riscos e propor melhorias — não para penalizar ninguém'},
+            {text:'<strong>É obrigatório responder?</strong> Não — mas a participação amplia a representatividade dos dados'},
+            {text:'<strong>O que muda depois da pesquisa?</strong> Os riscos identificados entram no PGR com plano de ação e prazo'},
+          ]},
+        ]
+      },
+      {
+        id:'2.4', name:'Treinamento: Lideranças', icon:'👔', iconBg:'#e8f5f4', timing:'D+4 — antes da coleta',
+        sections:[
+          {label:'Objetivo', type:'text', content:`O objetivo não é ensinar a norma — é fazer com que lideranças <strong>vejam o processo como uma oportunidade de melhoria</strong> e apoiem voluntariamente, sem receios ou medo. O engajamento da liderança é o fator que mais influencia a adesão dos colaboradores.`},
+          {label:'Conteúdo sugerido', type:'checklist', items:[
+            {text:'O que são fatores de risco psicossociais e por que surgem'},
+            {text:'Como o processo funciona — etapas, responsáveis e prazos'},
+            {text:'Como os resultados são analisados (por setor, não por pessoa, não por líder)'},
+            {text:'O papel da liderança: encorajar sem pressionar, responder dúvidas, não influenciar respostas'},
+            {text:'O que acontece após a análise — plano de ação conjunto, não punição'},
+          ]},
+          {label:'Lembrete', type:'why', variant:'gold', icon:'🎯', title:'Sem sensibilização prévia a adesão cai', text:'Sem sensibilização prévia a adesão cai e os dados perdem validade estatística. Esta fase prepara psicologicamente os colaboradores, reduz resistência e garante que todos entendam o anonimato antes de responder.'},
+        ]
+      },
+      {
+        id:'2.5', name:'Treinamento: Colaboradores', icon:'🧑‍💼', iconBg:'#e8f5f4', timing:'D+5 — imediatamente antes da abertura',
+        sections:[
+          {label:'Objetivo', type:'text', content:`Garantir que todos saibam <strong>como</strong> responder, <strong>por que</strong> responder e que não há riscos em responder com honestidade. Dúvidas não resolvidas antes da abertura se transformam em não-respostas.`},
+          {label:'Conteúdo sugerido', type:'checklist', items:[
+            {text:'O instrumento: 39 questões, escala de 5 pontos (Nunca → Sempre), ~10 minutos'},
+            {text:'Como acessar o formulário — demonstração ao vivo ou via projeção'},
+            {text:'As 6 dimensões avaliadas — o que cada bloco de perguntas representa'},
+            {text:'Reforço do anonimato — mostrar que o formulário não coleta identificação'},
+            {text:'Espaço para perguntas antes do formulário abrir'},
+          ]},
+          {label:'Documentos desta fase', type:'deliverables', items:[
+            {label:'📢 Comunicado formal', type:'teal'},
+            {label:'❓ FAQ anonimato', type:'teal'},
+            {label:'🎓 Slides lideranças', type:'teal'},
+            {label:'🎓 Slides colaboradores', type:'teal'},
+            {label:'📝 Ata/lista de presença', type:'teal'},
+          ]}
+        ]
+      },
+    ]
+  },
+  {
+    id:3, color:'#3d5068', label:'Fase 3', name:'Período de Coleta',
+    timing:'D+6 a D+10 — 5 dias úteis (+3 prorrogação)',
+    desc:'Abertura e monitoramento do formulário. A meta é atingir participação representativa por setor antes do encerramento.',
+    tags:['📊 Monitoramento diário','📋 Controle de participação','💾 Export de respostas'],
+    steps:[
+      {
+        id:'3.1', name:'Prazos e Critérios', icon:'⏱️', iconBg:'#edf0f4', timing:'Regras da coleta',
+        sections:[
+          {label:'Estrutura do período de coleta', type:'coleta'},
+          {label:'Critério de prorrogação', type:'why', variant:'gold', icon:'⚠️', title:'Quando prorrogar?', text:'A extensão de +3 dias é acionada quando a taxa de participação ao final do 5º dia estiver abaixo de 50% dos colaboradores ativos por setor ou grupo operacional. A meta de 50% é referência técnica — não exigência legal da NR-01.'},
+        ]
+      },
+      {
+        id:'3.2', name:'Abertura do Formulário', icon:'🚀', iconBg:'#edf0f4', timing:'D+6 — início da coleta',
+        sections:[
+          {label:'Checklist de abertura', type:'checklist', items:[
+            {text:'Testar o link do Google Forms antes de distribuir — verificar se as 39 questões estão corretas e na ordem certa'},
+            {text:'Distribuir o link por todos os canais definidos na Fase 2'},
+            {text:'Registrar data e hora de abertura na planilha de monitoramento'},
+            {text:'Informar o prazo final de resposta em todos os canais'},
+            {text:'Confirmar que o formulário está em modo anônimo (sem login do Google obrigatório)'},
+          ]},
+        ]
+      },
+      {
+        id:'3.3', name:'Monitoramento e Lembretes', icon:'📊', iconBg:'#edf0f4', timing:'D+7 a D+9',
+        sections:[
+          {label:'Como monitorar', type:'checklist', items:[
+            {text:'Acessar diariamente o Google Forms → Respostas → ver contagem total'},
+            {text:'Cruzar com a aba <strong>📊 Scores</strong> da Calculadora InovaSST — ela já calcula a taxa por setor automaticamente'},
+            {text:'Enviar lembrete amigável nos dias D+8 e D+9 para setores com baixa adesão'},
+            {text:'Tom dos lembretes: encorajamento, não pressão — sempre reforçar anonimato'},
+          ]},
+          {label:'Exemplo de lembrete', type:'why', variant:'teal', icon:'📩', title:'Modelo de mensagem de lembrete', text:'"Ainda há tempo para participar! O formulário fica aberto até [data]. Sua opinião é importante para melhorar as condições de trabalho de todos. Anônimo e rápido — leva só 10 minutos."'},
+        ]
+      },
+      {
+        id:'3.4', name:'Encerramento e Exportação', icon:'📥', iconBg:'#edf0f4', timing:'D+10 (ou D+13 se prorrogado)',
+        sections:[
+          {label:'Passo a passo do encerramento', type:'checklist', items:[
+            {text:'Verificar taxa global e por setor — documentar o percentual alcançado'},
+            {text:'Se &lt; 50%: prorrogar e registrar formalmente a prorrogação com justificativa'},
+            {text:'Fechar o formulário no Google Forms (desativar aceitação de respostas)'},
+            {text:'Exportar respostas: Planilhas Google → Arquivo → Download → .xlsx'},
+            {text:'Colar os dados na aba <strong>📥 Respostas</strong> da Calculadora COPSOQ InovaSST v4 — a partir da linha 6, colunas B em diante'},
+          ]},
+          {label:'Documentos desta fase', type:'deliverables', items:[
+            {label:'📊 Planilha de participação', type:'navy'},
+            {label:'📋 Registro de prorrogação', type:'navy'},
+            {label:'💾 Export XLSX das respostas', type:'navy'},
+          ]},
+          {label:'kit', type:'kit-cta', trigger:'coleta'}
+        ]
+      },
+    ]
+  },
+  {
+    id:4, color:'#c8922a', label:'Fase 4', name:'Análise e Emissão da AEP',
+    timing:'D+11 a D+13 — 3 dias úteis',
+    desc:'Processar os dados, calcular os scores por dimensão e setor, construir o inventário e emitir a AEP assinada.',
+    tags:['📊 Calculadora v4','⚡ Matriz SEV×PROB','📋 Inventário de Perigos','📄 AEP Assinada'],
+    steps:[
+      {
+        id:'4.1', name:'Fluxo da Análise', icon:'🔄', iconBg:'#f9edd5', timing:'Visão geral',
+        sections:[
+          {label:'Sequência de análise', type:'flow', items:[
+            {ico:'📥', title:'Importação', desc:'Colar respostas na Calculadora'},
+            {ico:'📊', title:'Scores', desc:'Dimensões calculadas automaticamente'},
+            {ico:'⚡', title:'SEV × PROB', desc:'Classificar cada perigo'},
+            {ico:'📋', title:'Inventário', desc:'Inventário NR-01 §1.5.4.3'},
+            {ico:'✍️', title:'AEP', desc:'Assinar com TST habilitado'},
+          ]},
+          {label:'Atenção crítica', type:'why', variant:'red', icon:'⚠️', title:'Sem assinatura do TST = sem validade', text:'A AEP só tem validade para auditoria quando assinada pelo TST habilitado que conduziu o processo. Sem assinatura, o documento não comprova a conformidade exigida pela NR-01.'},
+        ]
+      },
+      {
+        id:'4.2', name:'Calculadora COPSOQ', icon:'📊', iconBg:'#f9edd5', timing:'D+11 — processamento dos dados',
+        sections:[
+          {label:'Passo a passo na Calculadora', type:'checklist', items:[
+            {text:'Abrir a Calculadora COPSOQ InovaSST v4 (.xlsx)'},
+            {text:'Colar os dados exportados na aba <strong>📥 Respostas</strong> a partir da célula A6'},
+            {text:'Verificar automaticamente na aba <strong>📊 Scores</strong> os scores por dimensão e setor'},
+            {text:'Analisar o <strong>Dashboard</strong> — identificar dimensões e setores com score ALTO (≥ 60)'},
+            {text:'Cruzar com os indicadores de RH da aba <strong>📈 Indicadores de RH</strong>'},
+          ]},
+          {label:'Interpretação dos scores', type:'reasons', items:[
+            {ico:'🟢', title:'Score BAIXO (0–34)', text:'Condição favorável — monitorar no próximo ciclo.'},
+            {ico:'🟡', title:'Score MÉDIO (35–59)', text:'Atenção — condição que merece observação e medidas preventivas leves.'},
+            {ico:'🔴', title:'Score ALTO (60–100)', text:'Risco relevante — incluir no inventário e no plano de ação com prioridade.'},
+          ]},
+        ]
+      },
+      {
+        id:'4.3', name:'Inventário e Matriz de Risco', icon:'⚡', iconBg:'#f9edd5', timing:'D+12',
+        sections:[
+          {label:'Construção do inventário', type:'checklist', items:[
+            {text:'Para cada dimensão com score ALTO ou MÉDIO, identificar o perigo específico que gera aquele score'},
+            {text:'Preencher o inventário com os 8 campos obrigatórios da NR-01 §1.5.4.3: perigo, possíveis agravos, fonte/circunstância, grupo exposto, SEV, PROB, risco calculado, medida proposta'},
+            {text:'Aplicar a matriz SEV × PROB — o resultado é o nível de risco que irá para o PGR'},
+            {text:'Priorizar ações para riscos classificados como ALTO e MUITO ALTO'},
+          ]},
+          {label:'Triangulação', type:'why', variant:'navy', icon:'🔍', title:'Cruzar COPSOQ com indicadores de RH', text:'Scores COPSOQ + dados de absenteísmo, turnover e afastamentos CID-F constroem uma análise mais robusta. Quando os dois convergem (score alto + indicador negativo), o nível de risco sobe e a prioridade da medida aumenta.'},
+        ]
+      },
+      {
+        id:'4.4', name:'Emissão da AEP', icon:'📄', iconBg:'#f9edd5', timing:'D+13 — documento final',
+        sections:[
+          {label:'Finalização da AEP', type:'checklist', items:[
+            {text:'Preencher a AEP editável com os dados da Calculadora — inventário completo, scores, setores, datas'},
+            {text:'Revisar se todos os campos obrigatórios NR-01 estão preenchidos'},
+            {text:'Inserir o plano de ação preliminar com medidas, responsáveis e prazos sugeridos'},
+            {text:'Assinar digitalmente ou fisicamente como TST habilitado'},
+            {text:'Registrar data de emissão — essa é a data de referência do ciclo de avaliação'},
+          ]},
+          {label:'Documentos desta fase', type:'deliverables', items:[
+            {label:'📊 Calculadora preenchida', type:'gold'},
+            {label:'📋 Inventário de perigos', type:'gold'},
+            {label:'⚡ Matriz de risco', type:'gold'},
+            {label:'📄 AEP assinada', type:'gold'},
+          ]}
+        ]
+      },
+    ]
+  },
+  {
+    id:5, color:'#1a7a4a', label:'Fase 5', name:'Devolutiva e Integração ao PGR',
+    timing:'D+14 a D+16 — 3 dias úteis',
+    desc:'Comunicar os resultados, consolidar o plano de ação e integrar os riscos identificados ao PGR da empresa.',
+    tags:['📊 Dashboard resultados','📝 Plano de Ação','🗂️ Atualização do PGR','✅ Dossiê de evidências'],
+    steps:[
+      {
+        id:'5.1', name:'Devolutiva dos Resultados', icon:'📊', iconBg:'#e8f5ee', timing:'D+14',
+        sections:[
+          {label:'Por que fazer devolutiva', type:'text', content:`A devolutiva fecha o ciclo de participação e é o que dá credibilidade ao processo. Quando os colaboradores não recebem retorno dos resultados, a percepção é de que a pesquisa "não serviu para nada" — o que compromete a adesão nos próximos ciclos.`},
+          {label:'Como apresentar os resultados', type:'checklist', items:[
+            {text:'Primeiro à CAFRP — reunião de análise com todos os membros antes de comunicar'},
+            {text:'Depois aos colaboradores — apresentação por setor usando o Dashboard da Calculadora como suporte visual'},
+            {text:'Mostrar apenas resultados agregados — nunca comparações entre setores que possam identificar respondentes'},
+            {text:'Apresentar as medidas propostas junto com os resultados — não deixar a devolutiva apenas como "diagnóstico"'},
+          ]},
+        ]
+      },
+      {
+        id:'5.2', name:'Plano de Ação', icon:'📝', iconBg:'#e8f5ee', timing:'D+15',
+        sections:[
+          {label:'Estrutura do plano de ação', type:'checklist', items:[
+            {text:'Priorizar riscos ALTO e MUITO ALTO — eles entram no PGR com prazo imediato'},
+            {text:'Para cada perigo: definir medida específica + responsável + prazo + indicador de monitoramento'},
+            {text:'Distinguir medidas de curto prazo (até 30 dias), médio prazo (até 90 dias) e longo prazo'},
+            {text:'Validar o plano em reunião da CAFRP e registrar em ata'},
+          ]},
+          {label:'Hierarquia de controles', type:'why', variant:'teal', icon:'🔺', title:'Prioridade das medidas', text:'1. <strong>Eliminação</strong> — remover a fonte do risco<br>2. <strong>Substituição</strong> — substituir por condição de menor risco<br>3. <strong>Controles organizacionais</strong> — redesenho de processo, escala, metas<br>4. <strong>Controles administrativos</strong> — treinamento, comunicação, política<br>5. <strong>EPI psicossocial</strong> — apoio psicológico individual (última opção)'},
+        ]
+      },
+      {
+        id:'5.3', name:'Integração ao PGR', icon:'🗂️', iconBg:'#e8f5ee', timing:'D+16 — conclusão do ciclo',
+        sections:[
+          {label:'Como transferir para o PGR', type:'checklist', items:[
+            {text:'Incluir cada perigo psicossocial identificado no Inventário de Riscos do PGR com os mesmos campos da AEP'},
+            {text:'O nível de risco que consta na AEP (resultado de SEV × PROB) é o nível a ser registrado no PGR — não recalcular'},
+            {text:'Vincular as medidas de controle da AEP ao plano de ação do PGR — mesmos prazos e responsáveis'},
+            {text:'Registrar a data de avaliação e o responsável técnico que assinou a AEP'},
+            {text:'Arquivar todas as evidências do ciclo em pasta física ou digital organizada'},
+          ]},
+          {label:'10 evidências do ciclo completo', type:'why', variant:'green', icon:'✅', title:'Dossiê de conformidade', text:'1. Portaria de Designação · 2. Ata 1ª Reunião CAFRP · 3. Cronograma · 4. Comunicado · 5. FAQ de anonimato · 6. Lista de presença dos treinamentos · 7. Questionário aplicado · 8. Export de respostas · 9. Calculadora preenchida · 10. AEP assinada + PGR atualizado'},
+          {label:'Documentos desta fase', type:'deliverables', items:[
+            {label:'📊 Ata devolutiva', type:'teal'},
+            {label:'📝 Plano de Ação validado', type:'teal'},
+            {label:'🗂️ PGR atualizado', type:'teal'},
+            {label:'📁 Dossiê de evidências', type:'teal'},
+          ]},
+          {label:'Ciclo concluído', type:'completion'},
+          {label:'kit', type:'kit-cta', trigger:'final'}
+        ]
+      },
+    ]
+  }
+];
+
+/* ══════════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════════ */
+let currentPhase = 0; // index
+let currentStep  = 0; // index within phase
+const visited = new Set();
+
+function totalSteps(){ return DATA.reduce((a,p)=>a+p.steps.length,0); }
+function globalStepIndex(pi, si){ let g=0; for(let i=0;i<pi;i++) g+=DATA[i].steps.length; return g+si; }
+
+/* ══════════════════════════════════════════════════════════
+   RENDER SIDEBAR
+══════════════════════════════════════════════════════════ */
+function renderSidebar(){
+  const cont = document.getElementById('sidebar-phases');
+  cont.innerHTML = DATA.map((phase, pi)=>{
+    const isOpen = pi===currentPhase;
+    return `
+    <div class="sidebar-section">
+      <button class="sidebar-phase-btn ${isOpen?'active open':''}" onclick="gotoPhase(${pi})">
+        <div class="ph-num">${phase.id}</div>
+        <div class="ph-text">
+          <span class="ph-name">${phase.name}</span>
+          <span class="ph-timing">${phase.timing.split('—')[0].trim()}</span>
+        </div>
+        <span class="chevron">▶</span>
+      </button>
+      <div class="sidebar-steps ${isOpen?'open':''}">
+        ${phase.steps.map((st,si)=>{
+          const gsi = globalStepIndex(pi,si);
+          const isDone = visited.has(gsi) && !(pi===currentPhase&&si===currentStep);
+          const isActive = pi===currentPhase && si===currentStep;
+          return `<button class="sidebar-step-btn ${isActive?'active':''} ${isDone?'done':''}" onclick="gotoStep(${pi},${si})">
+            <div class="step-dot"></div>${st.name}
+          </button>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Progress
+  const done = visited.size;
+  const total = totalSteps();
+  const pct = Math.round(done/total*100);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-txt').textContent = `${done} de ${total} etapas`;
+}
+
+/* ══════════════════════════════════════════════════════════
+   RENDER CONTENT
+══════════════════════════════════════════════════════════ */
+function renderContent(){
+  const phase = DATA[currentPhase];
+  const step  = phase.steps[currentStep];
+  const gsi   = globalStepIndex(currentPhase, currentStep);
+  visited.add(gsi);
+
+  const totalPhaseSteps = phase.steps.length;
+  const prevDisabled = currentPhase===0 && currentStep===0;
+  const nextDisabled = currentPhase===DATA.length-1 && currentStep===totalPhaseSteps-1;
+
+  const html = `
+  <div class="phase-hero" style="border-top:4px solid ${phase.color}">
+    <div class="phase-hero-inner">
+      <div class="phase-eyebrow">
+        <div class="phase-num-big" style="background:${phase.color}">${phase.id===0?'📦':phase.id}</div>
+        <div class="phase-meta">
+          <div class="phase-meta-label">${phase.label}</div>
+          <div class="phase-meta-timing">⏱ ${phase.timing}</div>
+        </div>
+      </div>
+      <div class="phase-title">${phase.name}</div>
+      <div class="phase-desc">${phase.desc}</div>
+      <div class="phase-tags">${phase.tags.map(t=>`<div class="phase-tag">${t}</div>`).join('')}</div>
+    </div>
+  </div>
+
+  <div class="step-viewer">
+    <!-- Step tabs -->
+    <div class="step-tabs">
+      ${phase.steps.map((st,si)=>`
+        <button class="step-tab ${si===currentStep?'active':''}" onclick="gotoStep(${currentPhase},${si})">
+          <span class="tab-num">${phase.id===0?'Kit':phase.id}.${si+1}</span>${st.name}
+        </button>
+      `).join('')}
+    </div>
+
+    <!-- Active step panel -->
+    <div class="step-panel active">
+      <div class="step-card">
+        <div class="step-card-head">
+          <div class="step-icon-wrap" style="background:${step.iconBg}">${step.icon}</div>
+          <div>
+            <div class="step-card-title">${step.name}</div>
+            <div class="step-card-timing">${step.timing}</div>
+          </div>
+        </div>
+        <div class="step-card-body">
+          ${step.sections.map(s=>renderSection(s)).join('')}
+        </div>
+      </div>
+
+      <!-- Nav -->
+      <div class="step-nav">
+        <button class="nav-btn" onclick="navStep(-1)" ${prevDisabled?'disabled':''}>
+          <span class="arr">←</span> Anterior
+        </button>
+        ${nextDisabled
+          ? `<button class="nav-btn primary" disabled>Processo concluído ✓</button>`
+          : `<button class="nav-btn primary" onclick="navStep(1)">Próximo <span class="arr">→</span></button>`
+        }
+      </div>
+
+      <!-- Phase switcher -->
+      <div style="margin-top:28px">
+        <div class="block-label">Navegar por fase</div>
+        <div class="phase-switcher" style="margin-top:8px">
+          ${DATA.map((p,pi)=>`
+            <button class="ph-switch ${pi===currentPhase?'active':''}" onclick="gotoPhase(${pi})">
+              <div class="ph-sw-num" style="${pi===currentPhase?'background:rgba(255,255,255,.2)':''}">${p.id===0?'📦':p.id}</div>
+              ${p.name}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  document.getElementById('content-area').innerHTML = html;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function renderSection(s){
+  if(s.type==='text') return `
+    <div class="content-block">
+      <div class="block-label">${s.label}</div>
+      <div class="block-text"><p>${s.content}</p></div>
+    </div>`;
+
+  if(s.type==='why') return `
+    <div class="content-block">
+      <div class="block-label">${s.label}</div>
+      <div class="why-box ${s.variant||''}">
+        <div class="why-head-row"><span class="why-head-icon">${s.icon}</span><span class="why-head-text">${s.title}</span></div>
+        <div class="why-body-text">${s.text}</div>
+      </div>
+    </div>`;
+
+  if(s.type==='reasons') return `
+    <div class="content-block">
+      <div class="block-label">${s.label}</div>
+      <div class="reason-list">
+        ${s.items.map(it=>`
+          <div class="reason-item">
+            <div class="reason-ico">${it.ico}</div>
+            <div class="reason-txt"><strong>${it.title}</strong><br>${it.text}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  if(s.type==='checklist') return `
+    <div class="content-block">
+      <div class="block-label">${s.label}</div>
+      <div class="checklist">
+        ${s.items.map(it=>`
+          <div class="check-item">
+            <div class="check-ico">✓</div>
+            <div class="check-text">${it.text}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  if(s.type==='flow') return `
+    <div class="content-block">
+      <div class="block-label">${s.label}</div>
+      <div class="h-flow">
+        ${s.items.map(it=>`
+          <div class="h-flow-step">
+            <div class="hf-icon">${it.ico}</div>
+            <div class="hf-title">${it.title}</div>
+            <div class="hf-desc">${it.desc}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  if(s.type==='coleta') return `
+    <div class="content-block">
+      <div class="block-label">Estrutura do período de coleta</div>
+      <div class="coleta-pair">
+        <div class="coleta-card">
+          <div class="coleta-num">5</div>
+          <div class="coleta-unit">dias úteis — prazo padrão</div>
+          <div class="coleta-desc">Período regular de coleta. O formulário fica aberto por 5 dias úteis a partir da divulgação.</div>
+        </div>
+        <div class="coleta-card ext">
+          <div class="coleta-num">+3</div>
+          <div class="coleta-unit">dias úteis — prorrogação</div>
+          <div class="coleta-desc">Acionada quando a participação não atinge 50% ao final do 5º dia.</div>
+        </div>
+      </div>
+    </div>`;
+
+  if(s.type==='deliverables') return `
+    <div class="content-block">
+      <div class="block-label">${s.label}</div>
+      <div class="deliverables">
+        ${s.items.map(it=>`<div class="del ${it.type||''}">${it.label}</div>`).join('')}
+      </div>
+    </div>`;
+
+  if(s.type==='completion') return `
+    <div class="completion">
+      <h3>🎉 Ciclo de Avaliação Concluído</h3>
+      <p>Processo completo: inventário de riscos psicossociais integrado ao PGR, Plano de Ação documentado e todas as 10 evidências do ciclo prontas para auditoria. Próximo ciclo recomendado: 12 meses.</p>
+    </div>`;
+
+  if(s.type==='mte-refs') return `
+    <div class="content-block">
+      <div class="block-label">${s.label}</div>
+      <div class="mte-refs-list">
+        ${s.items.map(it=>`
+          <a class="mte-ref-item" href="${it.url}" target="_blank" rel="noopener">
+            <div class="mte-ref-left">
+              <div class="mte-ref-badge">${it.badge}</div>
+              <div class="mte-ref-body">
+                <div class="mte-ref-title">${it.title}</div>
+                <div class="mte-ref-desc">${it.desc}</div>
+              </div>
+            </div>
+            <div class="mte-ref-arrow">↗</div>
+          </a>`).join('')}
+      </div>
+      <div class="mte-ref-note">${s.note||''}</div>
+    </div>`;
+
+  if(s.type==='kit-cta'){
+    const isColeta = s.trigger==='coleta';
+    const title = isColeta
+      ? 'A calculadora, o questionário e os documentos que esta etapa exige estão no Kit InovaSST'
+      : 'Tudo que este guia descreve está pronto e editável no Kit InovaSST';
+    const desc = isColeta
+      ? 'O guia orienta o processo. Para executar você precisará: <strong>Questionário impresso (39 questões)</strong>, <strong>Calculadora COPSOQ v4 (xlsx)</strong>, <strong>AEP editável</strong>, atas, portaria, FAQ, slides de treinamento e relatório de devolutiva — todos já formatados e prontos para personalizar.'
+      : 'Todos os 10+ documentos do ciclo de conformidade, prontos para personalizar e aplicar. Você conduz, você assina — com a segurança de ter cada peça do processo já estruturada.';
+    return `
+    <div class="content-block">
+      <div class="kit-block">
+        <div class="kb-eyebrow">📦 Kit InovaSST · Método Completo</div>
+        <div class="kb-title">${title}</div>
+        <div class="kb-desc">${desc}</div>
+        <div class="kb-items">
+          <div class="kb-item"><div class="kb-ico">✓</div><div class="kb-txt"><strong>Questionário COPSOQ II-BR</strong> — 39 questões, PDF imprimível e Google Forms configurado</div></div>
+          <div class="kb-item"><div class="kb-ico">✓</div><div class="kb-txt"><strong>Calculadora automática (xlsx)</strong> — scores por setor e dimensão, matriz de risco, dashboard</div></div>
+          <div class="kb-item"><div class="kb-ico">✓</div><div class="kb-txt"><strong>AEP editável + inventário</strong> — com os 8 campos obrigatórios NR-01 já estruturados</div></div>
+          <div class="kb-item"><div class="kb-ico">✓</div><div class="kb-txt"><strong>Todos os documentos de governança</strong> — portaria, ata, cronograma, comunicado, FAQ</div></div>
+          <div class="kb-item"><div class="kb-ico">✓</div><div class="kb-txt"><strong>Slides de treinamento</strong> — para lideranças, colaboradores e CAFRP</div></div>
+        </div>
+        <div class="kb-actions">
+          <a class="kb-btn-main" href="https://go.hotmart.com/Y105378603X" target="_blank" rel="noopener">
+            Adquirir Kit InovaSST →
+          </a>
+          <div class="kb-note">Acesso imediato após a compra<br>Todos os arquivos editáveis</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  return '';
+}
+
+/* ══════════════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════════════ */
+function gotoPhase(pi){
+  currentPhase = pi;
+  currentStep = 0;
+  render();
+  closeSidebar();
+}
+
+function gotoStep(pi, si){
+  currentPhase = pi;
+  currentStep = si;
+  render();
+  closeSidebar();
+}
+
+function navStep(dir){
+  const phase = DATA[currentPhase];
+  let si = currentStep + dir;
+  let pi = currentPhase;
+
+  if(si < 0){
+    if(pi > 0){ pi--; si = DATA[pi].steps.length - 1; }
+    else return;
+  } else if(si >= phase.steps.length){
+    if(pi < DATA.length-1){ pi++; si = 0; }
+    else return;
+  }
+  currentPhase = pi;
+  currentStep = si;
+  render();
+}
+
+function render(){
+  renderSidebar();
+  renderContent();
+}
+
+/* ══ SIDEBAR MOBILE ══ */
+function toggleSidebar(){
+  const s = document.getElementById('sidebar');
+  const o = document.getElementById('overlay');
+  s.classList.toggle('open');
+  o.classList.toggle('open');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+/* INIT */
+render();
+</script>
+</body>
+</html>
